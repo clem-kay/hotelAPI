@@ -1,4 +1,10 @@
-import { IsString, IsBoolean, IsOptional, IsNotEmpty } from 'class-validator';
+import {
+  IsString,
+  IsBoolean,
+  IsOptional,
+  IsNotEmpty,
+  IsInt,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateUserAccountDto {
@@ -38,4 +44,12 @@ export class CreateUserAccountDto {
 
   @IsOptional()
   hashedRT?: string;
+
+  @ApiProperty({
+    description: 'User Id of the user making the request',
+    example: 'Deluxe Room',
+  })
+  @IsInt()
+  @IsNotEmpty()
+  userId: number;
 }

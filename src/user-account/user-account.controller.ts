@@ -12,7 +12,7 @@ import {
 import { CreateUserAccountDto } from './dto/create-user-account.dto';
 import { UpdateUserAccountDto } from './dto/update-user-account.dto';
 import { UserAccountService } from './user-account.service';
-import { DoesUserExist } from 'src/guards/doesUserExist.guard';
+import { DoesUserExist } from '../guards/doesUserExist.guard';
 import {
   ApiBody,
   ApiForbiddenResponse,
@@ -22,7 +22,7 @@ import {
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
-import { AdminGuard } from 'src/guards/adminRoles.guard';
+import { AdminGuard } from '../guards/adminRoles.guard';
 
 @Controller('user-accounts')
 export class UserAccountController {
@@ -31,7 +31,7 @@ export class UserAccountController {
   @Post()
   @UseGuards(DoesUserExist)
   @UseGuards(AuthGuard('jwt'))
-    @UseGuards(AdminGuard)
+  @UseGuards(AdminGuard)
   @HttpCode(HttpStatus.CREATED)
   @ApiOkResponse({ description: 'User created successfully' })
   @ApiUnprocessableEntityResponse({ description: 'Invalid data provided' })
@@ -51,11 +51,19 @@ export class UserAccountController {
 
   @Get()
   @UseGuards(AuthGuard('jwt'))
-  @UseGuards(AdminGuard)
   findAll() {
     return this.userAccountService.findAll();
   }
+
+  @Get(':id')
+  @UseGuards(AuthGuard('jwt'))
+  findOne(@Param('id') id: number) {
+    return this.userAccountService.findOneById(+id);
+  }
+
   @Put('/activate/:id')
+  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AdminGuard)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Activate or deactivate a user account' }) // Add operation summary
   @ApiOkResponse({ description: 'User activated/deactivated successfully' })
@@ -81,7 +89,10 @@ export class UserAccountController {
       required: ['isActive'],
     },
   })
-  async activate(@Param('id') id: string, @Body() body: { isActive: boolean }) {
+  async activate(
+    @Param('id') id: string,
+    @Body() body: { isActive: boolean; userId: number },
+  ) {
     return this.userAccountService.activate(+id, body);
   }
 }

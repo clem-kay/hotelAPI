@@ -2,7 +2,10 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsNotEmpty, IsNumber, IsInt } from 'class-validator';
 
 export class CreateRoomTypeDto {
-  @ApiProperty({ description: 'User Id of the user making the request', example: 'Deluxe Room' })
+  @ApiProperty({
+    description: 'User Id of the user making the request',
+    example: 'Deluxe Room',
+  })
   @IsInt()
   @IsNotEmpty()
   userId: number;

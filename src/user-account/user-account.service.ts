@@ -9,7 +9,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserAccountDto } from './dto/create-user-account.dto';
 import { UpdateUserAccountDto } from './dto/update-user-account.dto';
 import * as bcrypt from 'bcryptjs';
-import { hashPassword } from 'src/helpers';
+import { hashPassword } from '../helpers/index';
 import { ChangePasswordDTO } from 'src/auth/dto/LoginDto';
 
 @Injectable()
@@ -21,20 +21,23 @@ export class UserAccountService {
 
   constructor(private readonly prisma: PrismaService) {}
 
-  async activate(id: number, body: { isActive: boolean }) {
-    body.isActive
-      ? this.logger.log(`Activating user account with ID: ${id}`)
-      : this.logger.log(`Deactivating user account with ID: ${id}`);
+  async activate(id: number, body: { isActive: boolean; userId: number }) {
+    if (body.isActive) {
+      this.logger.log(`Activating user account with ID: ${id}`);
+    } else {
+      this.logger.log(`Deactivating user account with ID: ${id}`);
+    }
+
     try {
       const result = await this.prisma.userAccount.update({
         where: { id },
         data: body,
       });
-      body.isActive
-        ? this.logger.log(`Successfully Activated user account with ID: ${id}`)
-        : this.logger.log(
-            `Successfully Deactivated user account with ID: ${id}`,
-          );
+      if (body.isActive) {
+        this.logger.log(`Successfully Activated user account with ID: ${id}`);
+      } else {
+        this.logger.log(`Successfully Deactivated user account with ID: ${id}`);
+      }
 
       const userReturn = {
         username: result.username,
@@ -52,7 +55,8 @@ export class UserAccountService {
   }
 
   async findAll() {
-    return this.prisma.userAccount.findMany();
+    const userAccounts = await this.prisma.userAccount.findMany();
+    return {message:"success",userAccounts}
   }
 
   async create(createUserAccountDto: CreateUserAccountDto) {
@@ -60,7 +64,7 @@ export class UserAccountService {
 
     const user = await this.prisma.userAccount.create({
       data: {
-        username: createUserAccountDto.username,
+        username: createUserAccountDto.username.toLowerCase(),
         password: hashedPassword,
         role: createUserAccountDto.role.toUpperCase(),
         isActive: createUserAccountDto.isActive,
@@ -69,6 +73,7 @@ export class UserAccountService {
     });
 
     const returnUser = {
+      message:"success",
       username: user.username,
       role: createUserAccountDto.role,
     };
@@ -81,7 +86,7 @@ export class UserAccountService {
     console.log(updateUserAccountDto);
 
     if (updateUserAccountDto.username) {
-      data.username = updateUserAccountDto.username;
+      data.username = updateUserAccountDto.username.toLowerCase();
     }
 
     if (updateUserAccountDto.password) {
@@ -99,11 +104,12 @@ export class UserAccountService {
     if (updateUserAccountDto.hashedRT) {
       data.hashedRT = updateUserAccountDto.hashedRT;
     }
-    console.log(data);
-    return this.prisma.userAccount.update({
+
+    const updatedUser = await this.prisma.userAccount.update({
       where: { id },
       data,
     });
+    return { message:"success", username: updatedUser.username, role: updatedUser.role };
   }
 
   async findOneByUsername(username: string) {
@@ -131,7 +137,7 @@ export class UserAccountService {
         where: { id },
       });
       this.logger.log(`Successfully fetched user account with ID: ${id}`);
-      return userAccount;
+      return { message:"success",userAccount};
     } catch (error) {
       this.logger.error(
         `Failed to fetch user account with ID: ${id}`,

@@ -29,11 +29,11 @@ export class AuthService {
     const user = await this.userAccountService.findOneById(userId);
     if (!user) throw new ForbiddenException('Access Denied');
 
-    const rtMatches = bcrypt.compare(rt, user.hashedRT);
+    const rtMatches = bcrypt.compare(rt, user.userAccount.hashedRT);
     if (!rtMatches) throw new ForbiddenException('Access Denied');
 
-    const tokens = await this.getTokens(user.id, user.username);
-    await this.userAccountService.updateRTHash(user.id, tokens.refresh_token);
+    const tokens = await this.getTokens(user.userAccount.id, user.userAccount.username);
+    await this.userAccountService.updateRTHash(user.userAccount.id, tokens.refresh_token);
     return tokens;
   }
 

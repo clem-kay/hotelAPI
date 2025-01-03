@@ -13,16 +13,25 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model RoomType{
+model RoomType {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   name      String   @unique
   price     Float
-
-  @@map("RoomType")
+  rooms     Room[]
 }
 
+model Room {
+  id        Int      @id @default(autoincrement())
+  number    Int   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isAvailable Boolean @default(true)
+  roomTypeId Int
+  location String
+  roomType   RoomType @relation(fields: [roomTypeId], references: [id])
+}
 
 model UserAccount {
   id              Int          @id @default(autoincrement())

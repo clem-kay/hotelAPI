@@ -7,6 +7,7 @@ import { PrismaService } from './prisma/prisma.service';
 import { RoomTypeModule } from './room-type/room-type.module';
 import { UserAccountModule } from './user-account/user-account.module';
 import { AuthModule } from './auth/auth.module';
+import { RoomModule } from './room/room.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { AuthModule } from './auth/auth.module';
     PrismaModule,
     RoomTypeModule,
     UserAccountModule,
+    RoomModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],

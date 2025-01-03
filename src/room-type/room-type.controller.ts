@@ -21,7 +21,7 @@ import {
 } from '@nestjs/swagger';
 import { RoomType } from '@prisma/client';
 import { AuthGuard } from '@nestjs/passport';
-import { AdminGuard } from 'src/guards/adminRoles.guard';
+import { AdminGuard } from '../guards/adminRoles.guard';
 
 @ApiTags('RoomTypes')
 @Controller('room-types')
