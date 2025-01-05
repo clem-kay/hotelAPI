@@ -31,7 +31,9 @@ export class UserAccountService {
     try {
       const result = await this.prisma.userAccount.update({
         where: { id },
-        data: body,
+        data: {
+          isActive: body.isActive,
+        },
       });
       if (body.isActive) {
         this.logger.log(`Successfully Activated user account with ID: ${id}`);
@@ -56,7 +58,7 @@ export class UserAccountService {
 
   async findAll() {
     const userAccounts = await this.prisma.userAccount.findMany();
-    return {message:"success",userAccounts}
+    return { message: 'success', userAccounts };
   }
 
   async create(createUserAccountDto: CreateUserAccountDto) {
@@ -73,7 +75,7 @@ export class UserAccountService {
     });
 
     const returnUser = {
-      message:"success",
+      message: 'success',
       username: user.username,
       role: createUserAccountDto.role,
     };
@@ -109,7 +111,11 @@ export class UserAccountService {
       where: { id },
       data,
     });
-    return { message:"success", username: updatedUser.username, role: updatedUser.role };
+    return {
+      message: 'success',
+      username: updatedUser.username,
+      role: updatedUser.role,
+    };
   }
 
   async findOneByUsername(username: string) {
@@ -137,7 +143,7 @@ export class UserAccountService {
         where: { id },
       });
       this.logger.log(`Successfully fetched user account with ID: ${id}`);
-      return { message:"success",userAccount};
+      return { message: 'success', userAccount };
     } catch (error) {
       this.logger.error(
         `Failed to fetch user account with ID: ${id}`,

@@ -22,14 +22,20 @@ export class RoomService {
 
   async findAll() {
     this.logger.log('Fetching all room');
-    return this.prisma.room.findMany();
+    return this.prisma.room.findMany({
+      include: {
+        roomType: true,
+      },
+    });
   }
 
   async findOne(id: number) {
     this.logger.log(`Fetching room with ID: ${id}`);
-    return this.prisma.room.findUnique({
+
+    const room = await this.prisma.room.findUnique({
       where: { id },
     });
+    return room;
   }
 
   async update(id: number, updateRoomDto: UpdateRoomDto) {
@@ -62,6 +68,14 @@ export class RoomService {
       where: {
         roomTypeId,
       },
+    });
+  }
+
+  async bookRoom(id: number) {
+    // Mark room as unavailable
+    return await this.prisma.room.update({
+      where: { id },
+      data: { isAvailable: false },
     });
   }
 }

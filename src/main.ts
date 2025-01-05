@@ -13,6 +13,14 @@ async function bootstrap() {
     .setDescription('API documentation for Restaurant service app')
     .setVersion('1.0')
     .addTag('Hotel service')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT', // Optional
+      },
+      'access-token', // Name of the security scheme
+    )
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);

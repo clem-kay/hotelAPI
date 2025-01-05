@@ -23,14 +23,49 @@ model RoomType {
 }
 
 model Room {
-  id        Int      @id @default(autoincrement())
-  number    Int   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  isAvailable Boolean @default(true)
-  roomTypeId Int
-  location String
-  roomType   RoomType @relation(fields: [roomTypeId], references: [id])
+  id          Int      @id @default(autoincrement())
+  number      Int      @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  isAvailable Boolean  @default(true)
+  roomTypeId  Int
+  location    String
+
+  roomType    RoomType @relation(fields: [roomTypeId], references: [id])
+}
+model Guest {
+  id          Int       @id @default(autoincrement())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  firstName   String
+  lastName    String
+  email       String?    @unique
+  phone       String?
+
+  bookings  Booking[] // One-to-many relationship with Booking
+}
+
+model Booking {
+  id          Int       @id @default(autoincrement())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  paid        Boolean   @default(false)
+  guestId     Int
+  totalAmount Float?
+
+  guest       Guest     @relation(fields: [guestId], references: [id])
+  roomsBooked RoomBooked[] // One-to-many relationship with RoomBooked
+}
+
+model RoomBooked {
+  id          Int       @id @default(autoincrement())
+  roomId      Int
+  checkedIn   Boolean   @default(false)
+  startDate   DateTime
+  endDate     DateTime
+  bookingId   Int
+
+  booking     Booking   @relation(fields: [bookingId], references: [id])
 }
 
 model UserAccount {

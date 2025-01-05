@@ -47,7 +47,6 @@ export class RoomController {
   }
 
   @Get()
-  @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Retrieve all rooms' })
   @ApiResponse({

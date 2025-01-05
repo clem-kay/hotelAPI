@@ -14,6 +14,7 @@ import { UpdateUserAccountDto } from './dto/update-user-account.dto';
 import { UserAccountService } from './user-account.service';
 import { DoesUserExist } from '../guards/doesUserExist.guard';
 import {
+  ApiBearerAuth,
   ApiBody,
   ApiForbiddenResponse,
   ApiOkResponse,
@@ -31,6 +32,7 @@ export class UserAccountController {
   @Post()
   @UseGuards(DoesUserExist)
   @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('access-token')
   @UseGuards(AdminGuard)
   @HttpCode(HttpStatus.CREATED)
   @ApiOkResponse({ description: 'User created successfully' })
@@ -42,6 +44,7 @@ export class UserAccountController {
 
   @Put(':id')
   @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('access-token')
   update(
     @Param('id') id: number,
     @Body() updateUserAccountDto: UpdateUserAccountDto,

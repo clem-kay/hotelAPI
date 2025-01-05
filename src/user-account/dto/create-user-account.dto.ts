@@ -6,6 +6,7 @@ import {
   IsInt,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Role } from 'src/enum/app.enum';
 
 export class CreateUserAccountDto {
   @ApiProperty({
@@ -30,7 +31,12 @@ export class CreateUserAccountDto {
     example: 'Admin',
   })
   @IsString()
-  role: string;
+  @ApiProperty({
+    description: 'Should either be ADMIN or STAFF',
+    example: true,
+    required: false,
+  })
+  role: Role;
 
   @ApiProperty({
     description:
